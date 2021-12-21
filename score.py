@@ -115,15 +115,22 @@ def main(path):
     output.parent.mkdir(exist_ok=True)
     encoder = cv2.VideoWriter(f"{output}.mp4", codec, fps, (width, height))
 
+    scale = min(input_shape[1] / width, input_shape[0] / height)
+    offset_x = input_shape[1] - int(width * scale)
+    offset_y = input_shape[0] - int(height * scale)
+
     result = ["frame,x1,y1,x2,y2,score,label\n"]
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break
-        frame = letterbox_image(frame, input_shape)
         # save a copy of the img
         act_img = frame.copy()
+        frame = letterbox_image(frame, input_shape)
         boxes = get_detection(frame)
+        boxes[:, [0, 2]] -= offset_x // 2
+        boxes[:, [1, 3]] -= offset_y // 2
+        boxes[:, :4] /= scale
         # save per frame results
         pos = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
         for bbox in boxes:
@@ -134,6 +141,7 @@ def main(path):
             result.append(line)
         # draw the detection on the actual image
         frame = draw_detection(act_img, boxes, class_names)
+        # cv2.imwrite(f"{output}.png", frame)
         encoder.write(frame)
     cap.release()
 
