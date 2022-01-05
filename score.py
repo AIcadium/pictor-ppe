@@ -137,6 +137,15 @@ def main(path):
             x1, y1, x2, y2 = bbox[:4].astype(int)
             score = bbox[-2]
             label = int(bbox[-1])
+            cropped = frame[
+                min(y1 - 10, 0) : min(y2 + 10, height),
+                min(x1 - 10, 0) : min(x2 + 10, width),
+            ]
+            cropped = letterbox_image(cropped, input_shape)
+            detection = get_detection(cropped)
+            if len(detection) == 1:
+                score = detection[0][-2]
+                label = int(detection[0][-1])
             line = f"{pos},{x1},{y1},{x2},{y2},{score:.6f},{label}\n"
             result.append(line)
         # draw the detection on the actual image
