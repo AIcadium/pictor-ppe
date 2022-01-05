@@ -137,7 +137,7 @@ def main(path):
             x1, y1, x2, y2 = bbox[:4].astype(int)
             score = bbox[-2]
             label = int(bbox[-1])
-            cropped = frame[
+            cropped = act_img[
                 max(y1 - 10, 0) : min(y2 + 10, height),
                 max(x1 - 10, 0) : min(x2 + 10, width),
             ]
