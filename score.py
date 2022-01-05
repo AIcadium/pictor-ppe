@@ -138,8 +138,8 @@ def main(path):
             score = bbox[-2]
             label = int(bbox[-1])
             cropped = frame[
-                min(y1 - 10, 0) : min(y2 + 10, height),
-                min(x1 - 10, 0) : min(x2 + 10, width),
+                max(y1 - 10, 0) : min(y2 + 10, height),
+                max(x1 - 10, 0) : min(x2 + 10, width),
             ]
             cropped = letterbox_image(cropped, input_shape)
             detection = get_detection(cropped)
