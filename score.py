@@ -135,17 +135,22 @@ def main(path):
         pos = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
         for bbox in boxes:
             x1, y1, x2, y2 = bbox[:4].astype(int)
-            score = bbox[-2]
-            label = int(bbox[-1])
+            # reclassify using cropped image
             cropped = act_img[
-                max(y1 - 10, 0) : min(y2 + 10, height),
-                max(x1 - 10, 0) : min(x2 + 10, width),
+                max(y1 - 50, 0) : min(y2 + 50, height),
+                max(x1 - 50, 0) : min(x2 + 50, width),
             ]
             cropped = letterbox_image(cropped, input_shape)
             detection = get_detection(cropped)
-            if len(detection) == 1:
-                score = detection[0][-2]
-                label = int(detection[0][-1])
+            if detection.size > 0:
+                w = detection[:, 2] - detection[:, 0]
+                h = detection[:, 3] - detection[:, 1]
+                largest = np.argmax(w * h)
+                bbox[-2] = detection[largest][-2]
+                bbox[-1] = detection[largest][-1]
+            # write to csv
+            score = bbox[-2]
+            label = int(bbox[-1])
             line = f"{pos},{x1},{y1},{x2},{y2},{score:.6f},{label}\n"
             result.append(line)
         # draw the detection on the actual image
