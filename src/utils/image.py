@@ -48,7 +48,9 @@ def draw_detection(
     '''
     # generate some colors for different classes
     num_classes = len(class_names) # number of classes
-    colors = [mpl.colors.hsv_to_rgb((i/num_classes, 1, 1)) * 255 for i in range(num_classes)]
+    colors = [np.array([255.0, 0.0, 0.0]), np.array([127.5, 255.0, 0.0]), np.array([0.0, 127.5, 255.0]), np.array([127.5, 0.0, 255.0])]
+    if num_classes > len(colors):
+        colors = [mpl.colors.hsv_to_rgb((i/num_classes, 1, 1)) * 255 for i in range(num_classes)]
     
     # draw the detections
     for box in boxes:
